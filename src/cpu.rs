@@ -10,6 +10,7 @@ pub struct CPU {
     sp: u8,
     delay_timer: u8,
     sound_timer: u8,
+    frame: Frame,
 }
 
 impl CPU {
@@ -23,12 +24,12 @@ impl CPU {
             sp: 0,
             delay_timer: 0,
             sound_timer: 0,
+            frame: Frame::new(None, None),
         }
     }
 
-    pub fn start_frame(&mut self) {
-        let frame = Frame::new(None, None);
-        frame.run()
+    pub fn start_frame(self) {
+        self.frame.run()
     }
 
     pub fn execute_opcode(opcode: Opcode) {
