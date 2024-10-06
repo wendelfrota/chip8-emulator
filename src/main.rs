@@ -1,6 +1,10 @@
 mod cli;
+mod display;
+mod frame;
+
 use clap::{Parser};
 use crate::cli::{Commands, Cli};
+use crate::frame::Frame;
 
 fn main() {
     let cli = Cli::parse();
@@ -10,7 +14,9 @@ fn main() {
         }
         Commands::Start(start_command) => {
             println!("Memory Allocated: {} KB", start_command.memory);
-            println!("Starting...")
+            println!("Starting...");
+
+            Frame::new(None, None).run();
         }
     }
 }
