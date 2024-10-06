@@ -32,9 +32,13 @@ impl CPU {
         self.frame.run()
     }
 
-    pub fn execute_opcode(opcode: Opcode) {
+    fn clear_screen(&mut self) {
+        self.frame.clear();
+    }
+
+    pub fn execute_opcode(mut self, opcode: Opcode) {
         match opcode {
-            Opcode::CLS => {},
+            Opcode::CLS => self.clear_screen(),
             Opcode::RET => {},
             Opcode::SYS(_) => {},
             Opcode::JP(_) => {},

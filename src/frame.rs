@@ -72,4 +72,13 @@ impl Frame {
             }
         });
     }
+
+    pub fn clear(&mut self) {
+        let frame = self.pixels.get_frame();
+
+        let color = 0x00;
+        for pixel in frame.chunks_exact_mut(4) {
+            pixel.copy_from_slice(&[color, color, color, 0xFF]);
+        }
+    }
 }
