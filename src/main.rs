@@ -2,12 +2,12 @@ mod cli;
 mod display;
 mod frame;
 mod opcode;
+mod cpu;
 
 use clap::{Parser};
 use crate::cli::{Commands, Cli};
-use crate::frame::Frame;
 use std::fs;
-
+use crate::cpu::CPU;
 
 fn main() {
     let cli = Cli::parse();
@@ -33,7 +33,7 @@ fn main() {
             println!("Memory Allocated: {} KB", start_command.memory);
             println!("Starting...");
 
-            Frame::new(None, None).run();
+            CPU::new().start_frame();
         }
     }
 }
