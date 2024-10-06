@@ -1,4 +1,3 @@
-use piston_window::math::scale;
 use pixels::{Pixels, SurfaceTexture};
 use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
