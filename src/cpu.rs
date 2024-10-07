@@ -1,4 +1,3 @@
-use crate::display::Display;
 use crate::opcode::Opcode;
 
 
@@ -11,7 +10,6 @@ pub struct CPU {
     sp: u8,
     delay_timer: u8,
     sound_timer: u8,
-    display: Display,
 }
 
 impl CPU {
@@ -25,21 +23,12 @@ impl CPU {
             sp: 0,
             delay_timer: 0,
             sound_timer: 0,
-            display: Display::new(),
         }
-    }
-
-    pub fn start_frame(self) {
-        self.display.run()
-    }
-
-    fn clear_screen(&mut self) {
-        self.display.clear();
     }
 
     pub fn execute_opcode(mut self, opcode: Opcode) {
         match opcode {
-            Opcode::CLS => self.clear_screen(),
+            Opcode::CLS => {},
             Opcode::RET => {},
             Opcode::SYS(_) => {},
             Opcode::JP(_) => {},
