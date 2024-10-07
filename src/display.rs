@@ -1,11 +1,13 @@
 use pixels::{Pixels, SurfaceTexture};
 use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
+use winit::platform::run_return::EventLoopExtRunReturn;
 use winit::window::{WindowBuilder, Window};
 
 const CHIP8_WIDTH: u32 = 64;
 const CHIP8_HEIGHT: u32 = 32;
 const SCALE_FACTOR: u32 = 10;
+
 
 pub struct Display {
     event_loop: EventLoop<()>,
@@ -38,15 +40,17 @@ impl Display {
         }
     }
 
-    pub fn run(mut self) {
-        self.event_loop.run(move |event, _, control_flow| {
+    pub fn run(mut self) -> Result<(), String> {
+        self.event_loop.run_return(|event, _, control_flow| {
             *control_flow = ControlFlow::Wait;
 
             match event {
                 Event::WindowEvent {
                     event: WindowEvent::CloseRequested,
                     ..
-                } => *control_flow = ControlFlow::Exit,
+                } => {
+                    *control_flow = ControlFlow::Exit;
+                },
                 Event::WindowEvent {
                     event: WindowEvent::Resized(size),
                     ..
@@ -63,11 +67,14 @@ impl Display {
                     }
                     if let Err(e) = self.pixels.render() {
                         eprintln!("Render error: {:?}", e);
+                        *control_flow = ControlFlow::Exit;
                     }
                 }
                 _ => (),
             }
         });
+
+        Ok(())
     }
 
     pub fn clear(&mut self) {
