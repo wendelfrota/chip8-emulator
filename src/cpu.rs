@@ -1,5 +1,6 @@
-use crate::frame::Frame;
+use crate::display::Display;
 use crate::opcode::Opcode;
+
 
 pub struct CPU {
     memory: [u8; 4096],
@@ -10,7 +11,7 @@ pub struct CPU {
     sp: u8,
     delay_timer: u8,
     sound_timer: u8,
-    frame: Frame,
+    display: Display,
 }
 
 impl CPU {
@@ -24,16 +25,16 @@ impl CPU {
             sp: 0,
             delay_timer: 0,
             sound_timer: 0,
-            frame: Frame::new(None, None),
+            display: Display::new(),
         }
     }
 
     pub fn start_frame(self) {
-        self.frame.run()
+        self.display.run()
     }
 
     fn clear_screen(&mut self) {
-        self.frame.clear();
+        self.display.clear();
     }
 
     pub fn execute_opcode(mut self, opcode: Opcode) {

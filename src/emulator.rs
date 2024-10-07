@@ -1,20 +1,20 @@
 use crate::cpu::CPU;
-use crate::frame::Frame;
+use crate::display::Display;
 
 pub struct Emulator {
     cpu: CPU,
-    frame: Frame
+    display: Display
 }
 
 impl Emulator {
     pub fn new() -> Emulator {
         Emulator {
             cpu: CPU::new(),
-            frame: Frame::new(None, None),
+            display: Display::new(),
         }
     }
 
     pub fn start(self) {
-        self.frame.run();
+        self.display.run();
     }
 }

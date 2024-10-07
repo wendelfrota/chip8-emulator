@@ -3,7 +3,6 @@ mod commands;
 mod cpu;
 mod display;
 mod emulator;
-mod frame;
 mod opcode;
 
 use clap::Parser;
