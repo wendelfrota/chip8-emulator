@@ -1,9 +1,10 @@
 mod cli;
+mod commands;
+mod cpu;
 mod display;
+mod emulator;
 mod frame;
 mod opcode;
-mod cpu;
-mod commands;
 
 use clap::Parser;
 use crate::cli::{Commands, Cli};
