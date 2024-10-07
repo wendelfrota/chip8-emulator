@@ -13,6 +13,6 @@ fn main() {
     let cli = Cli::parse();
     match cli.command {
         Commands::Add(add_command) => commands::handle_add_command(&add_command),
-        Commands::Start(start_command) => commands::handle_start_command(&start_command),
+        Commands::Start => commands::handle_start_command(),
     }
 }

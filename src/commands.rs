@@ -1,12 +1,7 @@
 use std::fs;
-use crate::cli::{AddCommand, StartCommand};
+use crate::cli::{AddCommand};
 use crate::cpu::CPU;
 
-pub fn handle_start_command(start_command: &StartCommand) {
-    println!("Memory Allocated: {} KB", start_command.memory);
-    println!("Starting...");
-    CPU::new().start_frame();
-}
 
 pub fn handle_add_command(add_command: &AddCommand) {
     if let Err(e) = ensure_games_directory() {
@@ -19,6 +14,11 @@ pub fn handle_add_command(add_command: &AddCommand) {
         Ok(_) => println!("The specified path is not a file."),
         Err(e) => println!("{}", e),
     }
+}
+
+pub fn handle_start_command() {
+    println!("Starting...");
+    CPU::new().start_frame();
 }
 
 fn move_game_file(game: &str) {
