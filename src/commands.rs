@@ -1,6 +1,6 @@
 use std::fs;
 use crate::cli::{AddCommand};
-use crate::cpu::CPU;
+use crate::emulator::Emulator;
 
 
 pub fn handle_add_command(add_command: &AddCommand) {
@@ -18,7 +18,11 @@ pub fn handle_add_command(add_command: &AddCommand) {
 
 pub fn handle_start_command() {
     println!("Starting...");
-    CPU::new().start_frame();
+
+    match Emulator::new().start() {
+        Ok(_) => println!("Shutting down..."),
+        Err(e) => eprintln!("Exiting with error: {}", e),
+    }
 }
 
 fn move_game_file(game: &str) {
