@@ -2,17 +2,16 @@ use pixels::{Pixels, SurfaceTexture};
 use winit::event::{Event, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::platform::run_return::EventLoopExtRunReturn;
-use winit::window::{WindowBuilder, Window};
+use winit::window::{Window, WindowBuilder};
 
 const CHIP8_WIDTH: u32 = 64;
 const CHIP8_HEIGHT: u32 = 32;
 const SCALE_FACTOR: u32 = 10;
 
-
 pub struct Display {
     event_loop: EventLoop<()>,
     window: Window,
-    pixels: Pixels
+    pixels: Pixels,
 }
 
 impl Display {
@@ -30,13 +29,14 @@ impl Display {
         let pixels = Pixels::new(
             CHIP8_WIDTH,
             CHIP8_HEIGHT,
-            SurfaceTexture::new(CHIP8_WIDTH, CHIP8_HEIGHT, &window)
-        ).unwrap();
+            SurfaceTexture::new(CHIP8_WIDTH, CHIP8_HEIGHT, &window),
+        )
+        .unwrap();
 
         Display {
             event_loop,
             window,
-            pixels
+            pixels,
         }
     }
 
@@ -50,7 +50,7 @@ impl Display {
                     ..
                 } => {
                     *control_flow = ControlFlow::Exit;
-                },
+                }
                 Event::WindowEvent {
                     event: WindowEvent::Resized(size),
                     ..

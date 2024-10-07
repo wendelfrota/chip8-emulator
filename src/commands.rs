@@ -1,7 +1,6 @@
-use std::fs;
-use crate::cli::{AddCommand};
+use crate::cli::AddCommand;
 use crate::emulator::Emulator;
-
+use std::fs;
 
 pub fn handle_add_command(add_command: &AddCommand) {
     if let Err(e) = ensure_games_directory() {

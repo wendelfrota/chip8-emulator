@@ -1,6 +1,5 @@
 use clap::{Parser, Subcommand};
 
-
 #[derive(Parser)]
 #[command(name = "Chip8-Emulator")]
 pub struct Cli {
@@ -15,7 +14,7 @@ pub enum Commands {
 }
 
 #[derive(Parser)]
-pub struct AddCommand{
+pub struct AddCommand {
     #[arg(short, long)]
     pub game: String,
 }

@@ -5,9 +5,8 @@ mod display;
 mod emulator;
 mod opcode;
 
+use crate::cli::{Cli, Commands};
 use clap::Parser;
-use crate::cli::{Commands, Cli};
-
 
 fn main() {
     let cli = Cli::parse();
