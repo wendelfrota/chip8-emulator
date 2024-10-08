@@ -1,3 +1,4 @@
+use crate::constants::*;
 use crate::cpu::CPU;
 use pixels::{Pixels, SurfaceTexture};
 use winit::event::{Event, VirtualKeyCode};
@@ -5,10 +6,6 @@ use winit::event_loop::{ControlFlow, EventLoop};
 use winit::platform::run_return::EventLoopExtRunReturn;
 use winit::window::{Window, WindowBuilder};
 use winit_input_helper::WinitInputHelper;
-
-const CHIP8_WIDTH: u32 = 64;
-const CHIP8_HEIGHT: u32 = 32;
-const SCALE_FACTOR: u32 = 10;
 
 pub struct Emulator {
     event_loop: EventLoop<()>,
