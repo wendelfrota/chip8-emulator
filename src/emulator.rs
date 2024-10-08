@@ -1,3 +1,5 @@
+use std::{fs, io};
+use std::path::Path;
 use crate::constants::*;
 use crate::cpu::CPU;
 use pixels::{Pixels, SurfaceTexture};
@@ -27,6 +29,8 @@ impl Emulator {
     }
 
     pub fn start(&mut self, mut event_loop: EventLoop<()>) -> Result<(), String> {
+        Self::select_game().expect("Failed to select game");
+
         if self.window.is_none() {
             self.window = Some(WindowBuilder::new()
                 .with_title("Chip8 Emulator")
@@ -100,6 +104,32 @@ impl Emulator {
             };
             pixel.copy_from_slice(&color);
         }
+    }
+
+    fn select_game() -> Result<String, io::Error> {
+        let games_dir = Path::new("./src/games");
+        let entries = fs::read_dir(games_dir)?;
+        let mut games = Vec::new();
+
+        println!("Available games:");
+        for (index, entry) in entries.enumerate() {
+            let entry = entry?;
+            let file_name = entry.file_name();
+            let file_name = file_name.to_string_lossy();
+            println!("{}. {}", index + 1, file_name);
+            games.push(entry.path());
+        }
+
+        println!("Enter the number of the game you want to play:");
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let choice: usize = input.trim().parse().map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
+
+        if choice == 0 || choice > games.len() {
+            return Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid game number"));
+        }
+        Ok(games[choice - 1].to_string_lossy().into_owned())
     }
 
     pub fn clear(&mut self) {
