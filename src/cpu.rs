@@ -104,4 +104,8 @@ impl CPU {
     pub fn execute_opcode(&mut self, opcode: Opcode) {
        println!("Executing CPU instruction");
     }
+
+    fn clear_display(&mut self) {
+        self.display = [false; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize];
+    }
 }
