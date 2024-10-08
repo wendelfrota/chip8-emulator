@@ -81,7 +81,17 @@ impl Emulator {
     }
 
     fn draw(&mut self) {
-        println!("Drawing chip8");
+        let frame = self.pixels.get_frame();
+        for (i, pixel) in frame.chunks_exact_mut(4).enumerate() {
+            let x = i % CHIP8_WIDTH as usize;
+            let y = i / CHIP8_WIDTH as usize;
+            let color = if self.cpu.display[y * CHIP8_WIDTH as usize + x] {
+                [0xFF, 0xFF, 0xFF, 0xFF]
+            } else {
+                [0x00, 0x00, 0x00, 0xFF]
+            };
+            pixel.copy_from_slice(&color);
+        }
     }
 
     pub fn clear(&mut self) {
