@@ -39,43 +39,7 @@ impl CPU {
         (high_byte << 8) | low_byte
     }
 
-    pub fn execute_opcode(mut self, opcode: Opcode) {
-        match opcode {
-            Opcode::CLS => {}
-            Opcode::RET => {}
-            Opcode::SYS(_) => {}
-            Opcode::JP(_) => {}
-            Opcode::CALL(_) => {}
-            Opcode::SE_Vx_byte(_) => {}
-            Opcode::SNE_Vx_byte(_) => {}
-            Opcode::SE_Vx_Vy(_, _) => {}
-            Opcode::LD_Vx_byte(_) => {}
-            Opcode::ADD_Vx_byte(_) => {}
-            Opcode::LD_Vx_Vy(_, _) => {}
-            Opcode::OR_Vx_Vy(_, _) => {}
-            Opcode::AND_Vx_Vy(_, _) => {}
-            Opcode::XOR_Vx_Vy(_, _) => {}
-            Opcode::ADD_Vx_Vy(_, _) => {}
-            Opcode::SUB_Vx_Vy(_, _) => {}
-            Opcode::SHR_Vx(_) => {}
-            Opcode::SUBN_Vx_Vy(_, _) => {}
-            Opcode::SHL_Vx(_) => {}
-            Opcode::SNE_Vx_Vy(_, _) => {}
-            Opcode::LD_I_addr(_) => {}
-            Opcode::JP_V0_addr(_) => {}
-            Opcode::RND_Vx_byte(_) => {}
-            Opcode::DRW_Vx_Vy_nibble(_, _, _) => {}
-            Opcode::SKP_Vx(_) => {}
-            Opcode::SKNP_Vx(_) => {}
-            Opcode::LD_Vx_DT(_) => {}
-            Opcode::LD_Vx_K(_) => {}
-            Opcode::LD_DT_Vx(_) => {}
-            Opcode::LD_ST_Vx(_) => {}
-            Opcode::ADD_I_Vx(_) => {}
-            Opcode::LD_F_Vx(_) => {}
-            Opcode::LD_B_Vx(_) => {}
-            Opcode::LD_I_Vx(_) => {}
-            Opcode::LD_Vx_I(_) => {}
-        }
+    pub fn execute_opcode() {
+       println!("Executing CPU instruction");
     }
 }
