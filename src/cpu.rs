@@ -32,6 +32,13 @@ impl CPU {
         println!("Executing CPU cycle");
     }
 
+    fn fetch_opcode(&self) -> u16 {
+        let high_byte = self.memory[self.pc as usize] as u16;
+        let low_byte = self.memory[(self.pc + 1) as usize] as u16;
+
+        (high_byte << 8) | low_byte
+    }
+
     pub fn execute_opcode(mut self, opcode: Opcode) {
         match opcode {
             Opcode::CLS => {}
