@@ -1,6 +1,7 @@
 use crate::cli::AddCommand;
 use crate::emulator::Emulator;
 use std::fs;
+use winit::event_loop::EventLoop;
 
 pub fn handle_add_command(add_command: &AddCommand) {
     if let Err(e) = ensure_games_directory() {
@@ -18,7 +19,10 @@ pub fn handle_add_command(add_command: &AddCommand) {
 pub fn handle_start_command() {
     println!("Starting...");
 
-    match Emulator::new().start() {
+    let event_loop = EventLoop::new();
+    let emulator = Emulator::new();
+
+    match emulator.start(event_loop) {
         Ok(_) => println!("Shutting down..."),
         Err(e) => eprintln!("Exiting with error: {}", e),
     }
