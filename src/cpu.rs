@@ -102,7 +102,11 @@ impl CPU {
     }
 
     pub fn execute_opcode(&mut self, opcode: Opcode) {
-       println!("Executing CPU instruction");
+        match opcode {
+            Opcode::CLS => self.clear_display(),
+            _ => {}
+        }
+        self.pc += 2;
     }
 
     fn clear_display(&mut self) {
