@@ -4,6 +4,7 @@ use std::io::Read;
 use crate::opcode::Opcode;
 use crate::constants::{CHIP8_WIDTH, CHIP8_HEIGHT};
 
+#[derive(Clone)]
 pub struct CPU {
     memory: [u8; 4096],
     v: [u8; 16],
