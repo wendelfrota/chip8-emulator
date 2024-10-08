@@ -20,7 +20,7 @@ pub fn handle_start_command() {
     println!("Starting...");
 
     let event_loop = EventLoop::new();
-    let emulator = Emulator::new();
+    let mut emulator = Emulator::new();
 
     match emulator.start(event_loop) {
         Ok(_) => println!("Shutting down..."),

@@ -1,3 +1,5 @@
+use std::{fs, io};
+use std::path::Path;
 use crate::constants::*;
 use crate::cpu::CPU;
 use pixels::{Pixels, SurfaceTexture};
@@ -8,50 +10,59 @@ use winit::window::{Window, WindowBuilder};
 use winit_input_helper::WinitInputHelper;
 
 pub struct Emulator {
-    event_loop: EventLoop<()>,
-    window: Window,
-    pixels: Pixels,
+    window: Option<Window>,
+    pixels: Option<Pixels>,
     input: WinitInputHelper,
     cpu: CPU,
 }
 
 impl Emulator {
     pub fn new() -> Self {
-        let event_loop = EventLoop::new();
         let input = WinitInputHelper::new();
-        let window = WindowBuilder::new()
-            .with_title("Chip8 Emulator")
-            .with_inner_size(winit::dpi::PhysicalSize::new(
-                CHIP8_WIDTH * SCALE_FACTOR,
-                CHIP8_HEIGHT * SCALE_FACTOR,
-            ))
-            .build(&event_loop)
-            .unwrap();
-
-        let pixels = Pixels::new(
-            CHIP8_WIDTH,
-            CHIP8_HEIGHT,
-            SurfaceTexture::new(
-                CHIP8_WIDTH * SCALE_FACTOR,
-                CHIP8_HEIGHT * SCALE_FACTOR,
-                &window,
-            ),
-        )
-        .unwrap();
 
         Emulator {
-            event_loop,
-            window,
-            pixels,
+            window: None,
+            pixels: None,
             input,
             cpu: CPU::new(),
         }
     }
 
-    pub fn start(mut self, mut event_loop: EventLoop<()>) -> Result<(), String> {
+    pub fn start(&mut self, mut event_loop: EventLoop<()>) -> Result<(), String> {
+        Self::select_game().expect("Failed to select game");
+
+        if self.window.is_none() {
+            self.window = Some(WindowBuilder::new()
+                .with_title("Chip8 Emulator")
+                .with_inner_size(winit::dpi::PhysicalSize::new(
+                    CHIP8_WIDTH * SCALE_FACTOR,
+                    CHIP8_HEIGHT * SCALE_FACTOR,
+                ))
+                .build(&event_loop)
+                .expect("Failed to create window"));
+        }
+
+        if self.pixels.is_none() {
+            let window = self.window.as_ref().unwrap();
+            self.pixels = Some(Pixels::new(
+                CHIP8_WIDTH,
+                CHIP8_HEIGHT,
+                SurfaceTexture::new(
+                    CHIP8_WIDTH * SCALE_FACTOR,
+                    CHIP8_HEIGHT * SCALE_FACTOR,
+                    window,
+                ),
+            ).expect("Failed to create pixels."));
+        }
+
+        let mut input = self.input.clone();
+        let mut cpu = self.cpu.clone();
+        let window = self.window.take().unwrap();
+        let mut pixels = self.pixels.take().unwrap();
+
         event_loop.run_return(move |event, _, control_flow| {
-            if self.input.update(&event) {
-                if self.input.key_pressed(VirtualKeyCode::Escape) || self.input.quit() {
+            if input.update(&event) {
+                if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
                     *control_flow = ControlFlow::Exit;
                     return;
                 }
@@ -59,16 +70,16 @@ impl Emulator {
 
             match event {
                 Event::RedrawRequested(_) => {
-                    self.run_cycle();
-                    self.draw();
-                    if let Err(e) = self.pixels.render() {
+                    Self::run_cycle(&mut cpu, &mut pixels);
+
+                    if let Err(e) = pixels.render() {
                         eprintln!("pixels.render() failed: {}", e);
                         *control_flow = ControlFlow::Exit;
                         return;
                     }
                 }
                 Event::MainEventsCleared => {
-                    self.window.request_redraw();
+                    window.request_redraw();
                 }
                 _ => (),
             }
@@ -76,12 +87,49 @@ impl Emulator {
         Ok(())
     }
 
-    fn run_cycle(&mut self) {
+    fn run_cycle(cpu: &mut CPU, pixels: &mut Pixels) {
         println!("Executing cycle");
+        Self::draw(cpu, pixels);
     }
 
-    fn draw(&mut self) {
-        println!("Drawing chip8");
+    fn draw(cpu: &CPU, pixels: &mut Pixels) {
+        let frame = pixels.get_frame();
+        for (i, pixel) in frame.chunks_exact_mut(4).enumerate() {
+            let x = i % CHIP8_WIDTH as usize;
+            let y = i / CHIP8_WIDTH as usize;
+            let color = if cpu.display[y * CHIP8_WIDTH as usize + x] {
+                [0xFF, 0xFF, 0xFF, 0xFF]
+            } else {
+                [0x00, 0x00, 0x00, 0xFF]
+            };
+            pixel.copy_from_slice(&color);
+        }
+    }
+
+    fn select_game() -> Result<String, io::Error> {
+        let games_dir = Path::new("./src/games");
+        let entries = fs::read_dir(games_dir)?;
+        let mut games = Vec::new();
+
+        println!("Available games:");
+        for (index, entry) in entries.enumerate() {
+            let entry = entry?;
+            let file_name = entry.file_name();
+            let file_name = file_name.to_string_lossy();
+            println!("{}. {}", index + 1, file_name);
+            games.push(entry.path());
+        }
+
+        println!("Enter the number of the game you want to play:");
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let choice: usize = input.trim().parse().map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
+
+        if choice == 0 || choice > games.len() {
+            return Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid game number"));
+        }
+        Ok(games[choice - 1].to_string_lossy().into_owned())
     }
 
     pub fn clear(&mut self) {
