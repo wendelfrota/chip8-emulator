@@ -1,12 +1,7 @@
+use crate::cli::AddCommand;
+use crate::emulator::Emulator;
 use std::fs;
-use crate::cli::{AddCommand, StartCommand};
-use crate::cpu::CPU;
-
-pub fn handle_start_command(start_command: &StartCommand) {
-    println!("Memory Allocated: {} KB", start_command.memory);
-    println!("Starting...");
-    CPU::new().start_frame();
-}
+use winit::event_loop::EventLoop;
 
 pub fn handle_add_command(add_command: &AddCommand) {
     if let Err(e) = ensure_games_directory() {
@@ -18,6 +13,18 @@ pub fn handle_add_command(add_command: &AddCommand) {
         Ok(metadata) if metadata.is_file() => move_game_file(&add_command.game),
         Ok(_) => println!("The specified path is not a file."),
         Err(e) => println!("{}", e),
+    }
+}
+
+pub fn handle_start_command() {
+    println!("Starting...");
+
+    let event_loop = EventLoop::new();
+    let emulator = Emulator::new();
+
+    match emulator.start(event_loop) {
+        Ok(_) => println!("Shutting down..."),
+        Err(e) => eprintln!("Exiting with error: {}", e),
     }
 }
 
