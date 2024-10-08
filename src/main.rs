@@ -1,5 +1,6 @@
 mod cli;
 mod commands;
+mod constants;
 mod cpu;
 mod emulator;
 mod opcode;

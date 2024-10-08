@@ -8,8 +8,6 @@ to interact with hardware at a low level.
 
 ## Features
 - **Command Line Interface (CLI)**: Interact with the emulator via terminal commands.
-- **Memory Management**: Allocate memory for the emulator with a configurable size, allowing you to learn about memory 
-handling.
 - **Game Support**: Start the emulator with preloaded Chip-8 games and the ability to add custom games.
 
 
@@ -28,14 +26,11 @@ handling.
 
 ## Usage
 ### Start the Emulator
-To start the emulator with a specified memory size:
+To start the emulator:
 
 ```bash
-cargo run -- start --memory <size>
+cargo run -- start
 ```
-Replace `<size>` with the desired memory size (e.g., `128`). If no size is provided, the emulator will use a default 
-memory allocation.
-
 
 ### Add a Game
 To add a compatible Chip-8 game to the emulator:
@@ -47,7 +42,7 @@ Replace `<game>` with the path of the game you want to add.
 
 
 ## Commands
-- `start`: Initializes the emulator with a specified memory size and starts preloaded games.
+- `start`: Initializes the emulator and starts preloaded games.
 - `add`: Adds a custom Chip-8 game to the emulator.
 
 
