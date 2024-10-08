@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io;
+use std::io::Read;
 use crate::opcode::Opcode;
 use crate::constants::{CHIP8_WIDTH, CHIP8_HEIGHT};
 
@@ -26,6 +29,24 @@ impl CPU {
             sound_timer: 0,
             display: [false; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize],
         }
+    }
+
+    pub fn load_to_memory(&mut self, filename: &str) -> Result<(), io::Error> {
+        let mut file = File::open(filename)?;
+        let mut buffer = Vec::new();
+
+        file.read_to_end(&mut buffer)?;
+
+        if buffer.len() > self.memory.len() - 512 {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "File too large to read",
+            ));
+        }
+
+        self.memory[0x200..(0x200 + buffer.len())].copy_from_slice(&buffer);
+
+        Ok(())
     }
 
     pub fn execute_cycle(&mut self) {
