@@ -1,4 +1,5 @@
 use crate::opcode::Opcode;
+use crate::constants::{CHIP8_WIDTH, CHIP8_HEIGHT};
 
 pub struct CPU {
     memory: [u8; 4096],
@@ -9,6 +10,7 @@ pub struct CPU {
     sp: u8,
     delay_timer: u8,
     sound_timer: u8,
+    pub display: [bool; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize],
 }
 
 impl CPU {
@@ -22,7 +24,12 @@ impl CPU {
             sp: 0,
             delay_timer: 0,
             sound_timer: 0,
+            display: [false; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize],
         }
+    }
+
+    pub fn execute_cycle(&mut self) {
+        println!("Executing CPU cycle");
     }
 
     pub fn execute_opcode(mut self, opcode: Opcode) {
