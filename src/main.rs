@@ -1,7 +1,6 @@
 mod cli;
 mod commands;
 mod cpu;
-mod display;
 mod emulator;
 mod opcode;
 
