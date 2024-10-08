@@ -29,7 +29,9 @@ impl CPU {
     }
 
     pub fn execute_cycle(&mut self) {
-        println!("Executing CPU cycle");
+        let opcode = self.fetch_opcode();
+
+        self.execute_opcode(opcode);
     }
 
     fn fetch_opcode(&self) -> u16 {
@@ -39,7 +41,7 @@ impl CPU {
         (high_byte << 8) | low_byte
     }
 
-    pub fn execute_opcode() {
+    pub fn execute_opcode(&mut self, opcode: u16) {
        println!("Executing CPU instruction");
     }
 }
