@@ -35,6 +35,8 @@ impl Emulator {
             Ok(path) => game = path,
             Err(e) => return Err(e.to_string()),
         }
+        
+        self.cpu.load_to_memory(&game).expect("Failed to load game");
 
         if self.window.is_none() {
             self.window = Some(WindowBuilder::new()
