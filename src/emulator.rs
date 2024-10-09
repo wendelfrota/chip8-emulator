@@ -1,6 +1,5 @@
 use std::{fs, io};
 use std::path::Path;
-use clap::builder::Str;
 use crate::constants::*;
 use crate::cpu::CPU;
 use pixels::{Pixels, SurfaceTexture};
@@ -68,7 +67,7 @@ impl Emulator {
 
         event_loop.run_return(move |event, _, control_flow| {
             if input.update(&event) {
-                if input.key_pressed(VirtualKeyCode::Escape) || input.quit() {
+                if input.key_pressed(VirtualKeyCode::Escape) || input.close_requested() {
                     *control_flow = ControlFlow::Exit;
                     return;
                 }
