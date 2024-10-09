@@ -1,5 +1,6 @@
 use std::{fs, io};
 use std::path::Path;
+use clap::builder::Str;
 use crate::constants::*;
 use crate::cpu::CPU;
 use pixels::{Pixels, SurfaceTexture};
@@ -29,7 +30,12 @@ impl Emulator {
     }
 
     pub fn start(&mut self, mut event_loop: EventLoop<()>) -> Result<(), String> {
-        Self::select_game().expect("Failed to select game");
+        let game: String;
+
+        match Self::select_game() {
+            Ok(path) => game = path,
+            Err(e) => return Err(e.to_string()),
+        }
 
         if self.window.is_none() {
             self.window = Some(WindowBuilder::new()
@@ -120,16 +126,24 @@ impl Emulator {
             games.push(entry.path());
         }
 
-        println!("Enter the number of the game you want to play:");
+        let games_len = games.len();
 
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
-        let choice: usize = input.trim().parse().map_err(|e| io::Error::new(io::ErrorKind::InvalidInput, e))?;
-
-        if choice == 0 || choice > games.len() {
-            return Err(io::Error::new(io::ErrorKind::InvalidInput, "Invalid game number"));
+        if games_len == 0 {
+            return Err(io::Error::new(io::ErrorKind::InvalidInput, "No games found"));
         }
-        Ok(games[choice - 1].to_string_lossy().into_owned())
+
+        println!("Enter the number of the game you want to play:");
+        loop {
+            let mut input = String::new();
+            io::stdin().read_line(&mut input)?;
+
+            match input.trim().parse::<usize>() {
+                Ok(choice) if choice > 0 && choice <= games_len => {
+                    break Ok(games[choice - 1].to_string_lossy().into_owned())
+                },
+                _ => println!("Please select a valid game [1-{games_len}]"),
+            }
+        }
     }
 
     pub fn clear(&mut self) {
