@@ -93,7 +93,7 @@ impl Emulator {
     }
 
     fn draw(cpu: &CPU, pixels: &mut Pixels) {
-        let frame = pixels.get_frame();
+        let frame = pixels.frame_mut();
         for (i, pixel) in frame.chunks_exact_mut(4).enumerate() {
             let x = i % CHIP8_WIDTH as usize;
             let y = i / CHIP8_WIDTH as usize;
