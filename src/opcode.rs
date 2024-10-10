@@ -34,4 +34,5 @@ pub enum Opcode {
     LD_B_Vx(u8),                  // Fx33
     LD_I_Vx(u8),                  // Fx55
     LD_Vx_I(u8),                  // Fx65
+    INVALID(u16)                  // Invalid
 }
