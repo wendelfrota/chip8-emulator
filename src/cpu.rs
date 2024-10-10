@@ -129,6 +129,9 @@ impl CPU {
             Opcode::RET => self.ret(),
             Opcode::SYS(addr) => self.sys(addr),
             Opcode::JP(addr) => self.jp(addr),
+            Opcode::CALL(nnn) => self.call(nnn),
+            Opcode::SE_Vx_byte(x) => self.se_vx_byte(x),
+            Opcode::SNE_Vx_byte(x) => self.sne_vx_byte(x),
             _ => {}
         }
         self.pc += 2;
@@ -180,6 +183,16 @@ impl CPU {
     fn se_vx_byte(&mut self, x: u8) {
         let kk = self.memory[(self.pc + 1) as usize];
         if self.v[x as usize] == kk {
+            self.pc += 2;
+        }
+    }
+
+    fn sne_vx_byte(&mut self, x: u8) {
+        if x > 15 {
+            panic!("Invalid register index: {}", x);
+        }
+        let kk = self.memory[(self.pc + 1) as usize];
+        if self.v[x as usize] != kk {
             self.pc += 2;
         }
     }
