@@ -218,4 +218,12 @@ impl CPU {
         }
         Ok(())
     }
+
+    fn ld_vx_byte(&mut self, x: u8, kk: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.v[x as usize] = kk;
+        Ok(())
+    }
 }
