@@ -125,7 +125,7 @@ impl CPU {
 
     pub fn execute_opcode(&mut self, opcode: Opcode) {
         match opcode {
-            Opcode::CLS => self.clear_display(),
+            Opcode::CLS => self.cls(),
             Opcode::RET => self.ret(),
             Opcode::SYS(addr) => self.sys(addr),
             Opcode::JP(addr) => self.jp(addr),
@@ -134,7 +134,7 @@ impl CPU {
         self.pc += 2;
     }
 
-    fn clear_display(&mut self) {
+    fn cls(&mut self) {
         self.display = [false; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize];
     }
 
