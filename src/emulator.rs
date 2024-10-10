@@ -95,7 +95,9 @@ impl Emulator {
     }
 
     fn run_cycle(&mut self, cpu: &mut CPU, pixels: &mut Pixels) {
-        self.cpu.execute_cycle();
+        if let Err(e) = self.cpu.execute_cycle() {
+            eprintln!("CPU execution error: {}", e);
+        }
         Self::draw(cpu, pixels);
     }
 
