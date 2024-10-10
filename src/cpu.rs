@@ -141,4 +141,10 @@ impl CPU {
             self.pc = self.stack[self.sp as usize];
         }
     }
+
+    fn sys(&mut self, addr: u16) {
+        self.stack[self.sp as usize] = self.pc;
+        self.sp += 1;
+        self.pc = addr;
+    }
 }
