@@ -155,16 +155,8 @@ impl CPU {
         Ok(())
     }
 
-    fn sys(&mut self, addr: u16) {
-        if addr > 0xFFF {
-            panic!("Invalid address for SYS: {:X}", addr);
-        }
-        if self.sp == 16 {
-            panic!("Stack overflow!");
-        }
-        self.stack[self.sp as usize] = self.pc;
-        self.sp += 1;
-        self.pc = addr;
+    fn sys(&mut self, addr: u16) -> Result<(), String> {
+        Ok(())
     }
 
     fn jp(&mut self, addr: u16) -> Result<(), String> {
