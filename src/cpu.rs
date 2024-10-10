@@ -147,4 +147,8 @@ impl CPU {
         self.sp += 1;
         self.pc = addr;
     }
+
+    fn jp(&mut self, addr: u16) {
+        self.pc = addr;
+    }
 }
