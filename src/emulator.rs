@@ -146,8 +146,4 @@ impl Emulator {
             }
         }
     }
-
-    pub fn clear(&mut self) {
-        println!("Clearing screen");
-    }
 }
