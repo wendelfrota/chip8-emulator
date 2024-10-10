@@ -134,4 +134,11 @@ impl CPU {
     fn clear_display(&mut self) {
         self.display = [false; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize];
     }
+
+    fn ret(&mut self) {
+        if self.sp > 0 {
+            self.sp -= 1;
+            self.pc = self.stack[self.sp as usize];
+        }
+    }
 }
