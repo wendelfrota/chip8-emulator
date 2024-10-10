@@ -176,4 +176,11 @@ impl CPU {
         self.sp += 1;
         self.pc = nnn;
     }
+
+    fn se_vx_byte(&mut self, x: u8) {
+        let kk = self.memory[(self.pc + 1) as usize];
+        if self.v[x as usize] == kk {
+            self.pc += 2;
+        }
+    }
 }
