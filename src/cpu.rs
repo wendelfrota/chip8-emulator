@@ -126,6 +126,9 @@ impl CPU {
     pub fn execute_opcode(&mut self, opcode: Opcode) {
         match opcode {
             Opcode::CLS => self.clear_display(),
+            Opcode::RET => self.ret(),
+            Opcode::SYS(addr) => self.sys(addr),
+            Opcode::JP(addr) => self.jp(addr),
             _ => {}
         }
         self.pc += 2;
