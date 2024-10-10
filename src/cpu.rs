@@ -59,7 +59,16 @@ impl CPU {
         let opcode = self.fetch_opcode();
         let decoded_opcode = self.decode_opcode(opcode);
         self.pc += 2;
-        self.execute_opcode(decoded_opcode)
+        self.execute_opcode(decoded_opcode)?;
+
+        if self.delay_timer > 0 {
+            self.delay_timer -= 1;
+        }
+        if self.sound_timer > 0 {
+            self.sound_timer -= 1;
+        }
+
+        Ok(())
     }
 
     fn fetch_opcode(&self) -> u16 {
