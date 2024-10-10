@@ -164,4 +164,16 @@ impl CPU {
         }
         self.pc = addr;
     }
+
+    fn call(&mut self, nnn: u16) {
+        if self.sp == 16 {
+            panic!("Stack overflow!");
+        }
+        if nnn > 0xFFF {
+            panic!("Invalid address for CALL: {:X}", nnn);
+        }
+        self.stack[self.sp as usize] = self.pc;
+        self.sp += 1;
+        self.pc = nnn;
+    }
 }
