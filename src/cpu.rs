@@ -4,13 +4,19 @@ use std::io::Read;
 use crate::opcode::Opcode;
 use crate::constants::{CHIP8_WIDTH, CHIP8_HEIGHT};
 
+const PROGRAM_START: u16 = 0x200;
+const MEMORY_SIZE: usize = 4096;
+const NUM_REGISTERS: usize = 16;
+const STACK_SIZE: usize = 16;
+const MAX_PROGRAM_SIZE: usize = MEMORY_SIZE - PROGRAM_START as usize;
+
 #[derive(Clone)]
 pub struct CPU {
-    memory: [u8; 4096],
-    v: [u8; 16],
+    memory: [u8; MEMORY_SIZE],
+    v: [u8; NUM_REGISTERS],
     i: u16,
     pc: u16,
-    stack: [u16; 16],
+    stack: [u16; STACK_SIZE],
     sp: u8,
     delay_timer: u8,
     sound_timer: u8,
@@ -20,11 +26,11 @@ pub struct CPU {
 impl CPU {
     pub fn new() -> CPU {
         CPU {
-            memory: [0; 4096],
-            v: [0; 16],
+            memory: [0; MEMORY_SIZE],
+            v: [0; NUM_REGISTERS],
             i: 0,
-            pc: 0x200,
-            stack: [0; 16],
+            pc: PROGRAM_START,
+            stack: [0; STACK_SIZE],
             sp: 0,
             delay_timer: 0,
             sound_timer: 0,
@@ -38,14 +44,13 @@ impl CPU {
 
         file.read_to_end(&mut buffer)?;
 
-        if buffer.len() > self.memory.len() - 512 {
+        if buffer.len() > MAX_PROGRAM_SIZE {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
                 "File too large to read",
             ));
         }
-
-        self.memory[0x200..(0x200 + buffer.len())].copy_from_slice(&buffer);
+        self.memory[PROGRAM_START as usize..(PROGRAM_START as usize + buffer.len())].copy_from_slice(&buffer);
 
         Ok(())
     }
@@ -70,7 +75,6 @@ impl CPU {
         let nnn = opcode & 0x0FFF;
         let kk = (opcode & 0x00FF) as u8;
         let n = (opcode & 0x000F) as u8;
-
 
         match opcode & 0xF000 {
             0x0000 => match opcode {
