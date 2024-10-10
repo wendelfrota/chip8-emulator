@@ -139,19 +139,29 @@ impl CPU {
     }
 
     fn ret(&mut self) {
-        if self.sp > 0 {
-            self.sp -= 1;
-            self.pc = self.stack[self.sp as usize];
+        if self.sp == 0 {
+            panic!("Stack underflow!");
         }
+        self.sp -= 1;
+        self.pc = self.stack[self.sp as usize];
     }
 
     fn sys(&mut self, addr: u16) {
+        if addr > 0xFFF {
+            panic!("Invalid address for SYS: {:X}", addr);
+        }
+        if self.sp == 16 {
+            panic!("Stack overflow!");
+        }
         self.stack[self.sp as usize] = self.pc;
         self.sp += 1;
         self.pc = addr;
     }
 
     fn jp(&mut self, addr: u16) {
+        if addr > 0xFFF {
+            panic!("Invalid address for JP: {:X}", addr);
+        }
         self.pc = addr;
     }
 }
