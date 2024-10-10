@@ -77,7 +77,7 @@ impl Emulator {
 
             match event {
                 Event::RedrawRequested(_) => {
-                    Self::run_cycle(&mut cpu, &mut pixels);
+                    self.run_cycle(&mut cpu, &mut pixels);
 
                     if let Err(e) = pixels.render() {
                         eprintln!("pixels.render() failed: {}", e);
@@ -94,8 +94,8 @@ impl Emulator {
         Ok(())
     }
 
-    fn run_cycle(cpu: &mut CPU, pixels: &mut Pixels) {
-        println!("Executing cycle");
+    fn run_cycle(&mut self, cpu: &mut CPU, pixels: &mut Pixels) {
+        self.cpu.execute_cycle();
         Self::draw(cpu, pixels);
     }
 
