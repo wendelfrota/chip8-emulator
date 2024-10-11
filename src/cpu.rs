@@ -305,4 +305,13 @@ impl CPU {
         self.v[0xF] = if borrow { 0 } else { 1 };
         Ok(())
     }
+
+    fn shl_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.v[0xF] = (self.v[x as usize] & 0x80) >> 7;
+        self.v[x as usize] <<= 1;
+        Ok(())
+    }
 }
