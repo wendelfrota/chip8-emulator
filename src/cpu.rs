@@ -258,4 +258,12 @@ impl CPU {
         self.v[x as usize] &= self.v[y as usize];
         Ok(())
     }
+
+    fn xor_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        self.v[x as usize] ^= self.v[y as usize];
+        Ok(())
+    }
 }
