@@ -276,4 +276,14 @@ impl CPU {
         self.v[0xF] = if overflow { 1 } else { 0 };
         Ok(())
     }
+
+    fn sub_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        let (diff, borrow) = self.v[x as usize].overflowing_sub(self.v[y as usize]);
+        self.v[x as usize] = diff;
+        self.v[0xF] = if borrow { 0 } else { 1 };
+        Ok(())
+    }
 }
