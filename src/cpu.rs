@@ -250,4 +250,68 @@ impl CPU {
         self.v[x as usize] |= self.v[y as usize];
         Ok(())
     }
+
+    fn and_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        self.v[x as usize] &= self.v[y as usize];
+        Ok(())
+    }
+
+    fn xor_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        self.v[x as usize] ^= self.v[y as usize];
+        Ok(())
+    }
+
+    fn add_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        let (sum, overflow) = self.v[x as usize].overflowing_add(self.v[y as usize]);
+        self.v[x as usize] = sum;
+        self.v[0xF] = if overflow { 1 } else { 0 };
+        Ok(())
+    }
+
+    fn sub_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        let (diff, borrow) = self.v[x as usize].overflowing_sub(self.v[y as usize]);
+        self.v[x as usize] = diff;
+        self.v[0xF] = if borrow { 0 } else { 1 };
+        Ok(())
+    }
+
+    fn shr_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.v[0xF] = self.v[x as usize] & 0x1;
+        self.v[x as usize] >>= 1;
+        Ok(())
+    }
+
+    fn subn_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        let (diff, borrow) = self.v[y as usize].overflowing_sub(self.v[x as usize]);
+        self.v[x as usize] = diff;
+        self.v[0xF] = if borrow { 0 } else { 1 };
+        Ok(())
+    }
+
+    fn shl_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.v[0xF] = (self.v[x as usize] & 0x80) >> 7;
+        self.v[x as usize] <<= 1;
+        Ok(())
+    }
 }
