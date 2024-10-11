@@ -266,4 +266,14 @@ impl CPU {
         self.v[x as usize] ^= self.v[y as usize];
         Ok(())
     }
+
+    fn add_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        let (sum, overflow) = self.v[x as usize].overflowing_add(self.v[y as usize]);
+        self.v[x as usize] = sum;
+        self.v[0xF] = if overflow { 1 } else { 0 };
+        Ok(())
+    }
 }
