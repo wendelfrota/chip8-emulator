@@ -59,7 +59,16 @@ impl CPU {
         let opcode = self.fetch_opcode();
         let decoded_opcode = self.decode_opcode(opcode);
         self.pc += 2;
-        self.execute_opcode(decoded_opcode)
+        self.execute_opcode(decoded_opcode)?;
+
+        if self.delay_timer > 0 {
+            self.delay_timer -= 1;
+        }
+        if self.sound_timer > 0 {
+            self.sound_timer -= 1;
+        }
+
+        Ok(())
     }
 
     fn fetch_opcode(&self) -> u16 {
@@ -155,16 +164,8 @@ impl CPU {
         Ok(())
     }
 
-    fn sys(&mut self, addr: u16) {
-        if addr > 0xFFF {
-            panic!("Invalid address for SYS: {:X}", addr);
-        }
-        if self.sp == 16 {
-            panic!("Stack overflow!");
-        }
-        self.stack[self.sp as usize] = self.pc;
-        self.sp += 1;
-        self.pc = addr;
+    fn sys(&mut self, addr: u16) -> Result<(), String> {
+        Ok(())
     }
 
     fn jp(&mut self, addr: u16) -> Result<(), String> {
@@ -205,6 +206,48 @@ impl CPU {
         if self.v[x as usize] != kk {
             self.pc += 2;
         }
+        Ok(())
+    }
+
+    fn se_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        if self.v[x as usize] == self.v[y as usize] {
+            self.pc += 2;
+        }
+        Ok(())
+    }
+
+    fn ld_vx_byte(&mut self, x: u8, kk: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.v[x as usize] = kk;
+        Ok(())
+    }
+
+    fn add_vx_byte(&mut self, x: u8, kk: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.v[x as usize] = self.v[x as usize].wrapping_add(kk);
+        Ok(())
+    }
+
+    fn ld_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        self.v[x as usize] = self.v[y as usize];
+        Ok(())
+    }
+
+    fn or_vx_vy(&mut self, x: u8, y: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        self.v[x as usize] |= self.v[y as usize];
         Ok(())
     }
 }
