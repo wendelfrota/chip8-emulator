@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io;
 use std::io::Read;
+use rand::random;
 use crate::opcode::Opcode;
 use crate::constants::{CHIP8_WIDTH, CHIP8_HEIGHT};
 
@@ -332,6 +333,15 @@ impl CPU {
 
     fn jp_v0_addr(&mut self, nnn: u16) -> Result<(), String> {
         self.pc = nnn + self.v[0] as u16;
+        Ok(())
+    }
+
+    fn rnd_vx_byte(&mut self, x: u8, kk: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        let random_byte: u8 = random();
+        self.v[x as usize] = random_byte & kk;
         Ok(())
     }
 }
