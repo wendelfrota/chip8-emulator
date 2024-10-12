@@ -344,4 +344,30 @@ impl CPU {
         self.v[x as usize] = random_byte & kk;
         Ok(())
     }
+
+    fn drw_vx_vy_nibble(&mut self, x: u8, y: u8, n: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS || y as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: x={}, y={}", x, y));
+        }
+        let x_coord = self.v[x as usize] as usize;
+        let y_coord = self.v[y as usize] as usize;
+        self.v[0xF] = 0;
+
+        for byte_index in 0..n as usize {
+            let y = (y_coord + byte_index) % CHIP8_HEIGHT as usize;
+            let sprite_byte = self.memory[(self.i as usize) + byte_index];
+
+            for bit_index in 0..8 {
+                let x = (x_coord + bit_index) % CHIP8_WIDTH as usize;
+                let color = (sprite_byte & (0x80 >> bit_index)) != 0;
+                let index = y * CHIP8_WIDTH as usize + x;
+
+                if color && self.display[index] {
+                    self.v[0xF] = 1;
+                }
+                self.display[index] ^= color;
+            }
+        }
+        Ok(())
+    }
 }
