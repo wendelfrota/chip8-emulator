@@ -324,4 +324,9 @@ impl CPU {
         }
         Ok(())
     }
+
+    fn ld_i_addr(&mut self, nnn: u16) -> Result<(), String> {
+        self.i = nnn;
+        Ok(())
+    }
 }
