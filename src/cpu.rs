@@ -329,4 +329,9 @@ impl CPU {
         self.i = nnn;
         Ok(())
     }
+
+    fn jp_v0_addr(&mut self, nnn: u16) -> Result<(), String> {
+        self.pc = nnn + self.v[0] as u16;
+        Ok(())
+    }
 }
