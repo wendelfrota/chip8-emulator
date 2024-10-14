@@ -481,4 +481,16 @@ impl CPU {
         self.i += self.v[x as usize] as u16;
         Ok(())
     }
+
+    fn ld_f_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        let digit = self.v[x as usize];
+        if digit > 0xF {
+            return Err(format!("Invalid digit value: {}", digit));
+        }
+        self.i = (digit as u16) * 5;
+        Ok(())
+    }
 }
