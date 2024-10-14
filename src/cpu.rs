@@ -75,6 +75,12 @@ impl CPU {
         Ok(())
     }
 
+    pub fn set_key(&mut self, key: usize, pressed: bool) {
+        if key < NUM_KEYS {
+            self.keys[key] = pressed;
+        }
+    }
+
     fn fetch_opcode(&self) -> u16 {
         let high_byte = self.memory[self.pc as usize] as u16;
         let low_byte = self.memory[(self.pc + 1) as usize] as u16;
@@ -149,8 +155,35 @@ impl CPU {
             Opcode::CALL(nnn) => self.call(nnn),
             Opcode::SE_Vx_byte(x, kk) => self.se_vx_byte(x, kk),
             Opcode::SNE_Vx_byte(x, kk) => self.sne_vx_byte(x, kk),
+            Opcode::SE_Vx_Vy(x, y) => self.se_vx_vy(x, y),
+            Opcode::LD_Vx_byte(x, kk) => self.ld_vx_byte(x, kk),
+            Opcode::ADD_Vx_byte(x, kk) => self.add_vx_byte(x, kk),
+            Opcode::LD_Vx_Vy(x, y) => self.ld_vx_vy(x, y),
+            Opcode::OR_Vx_Vy(x, y) => self.or_vx_vy(x, y),
+            Opcode::AND_Vx_Vy(x, y) => self.and_vx_vy(x, y),
+            Opcode::XOR_Vx_Vy(x, y) => self.xor_vx_vy(x, y),
+            Opcode::ADD_Vx_Vy(x, y) => self.add_vx_vy(x, y),
+            Opcode::SUB_Vx_Vy(x, y) => self.sub_vx_vy(x, y),
+            Opcode::SHR_Vx(x) => self.shr_vx(x),
+            Opcode::SUBN_Vx_Vy(x, y) => self.subn_vx_vy(x, y),
+            Opcode::SHL_Vx(x) => self.shl_vx(x),
+            Opcode::SNE_Vx_Vy(x, y) => self.sne_vx_vy(x, y),
+            Opcode::LD_I_addr(nnn) => self.ld_i_addr(nnn),
+            Opcode::JP_V0_addr(nnn) => self.jp_v0_addr(nnn),
+            Opcode::RND_Vx_byte(x, kk) => self.rnd_vx_byte(x, kk),
+            Opcode::DRW_Vx_Vy_nibble(x, y, n) => self.drw_vx_vy_nibble(x, y, n),
+            Opcode::SKP_Vx(x) => self.skp_vx(x),
+            Opcode::SKNP_Vx(x) => self.sknp_vx(x),
+            Opcode::LD_Vx_DT(x) => self.ld_vx_dt(x),
+            Opcode::LD_Vx_K(x) => self.ld_vx_k(x),
+            Opcode::LD_DT_Vx(x) => self.ld_dt_vx(x),
+            Opcode::LD_ST_Vx(x) => self.ld_st_vx(x),
+            Opcode::ADD_I_Vx(x) => self.add_i_vx(x),
+            Opcode::LD_F_Vx(x) => self.ld_f_vx(x),
+            Opcode::LD_B_Vx(x) => self.ld_b_vx(x),
+            Opcode::LD_I_Vx(x) => self.ld_i_vx(x),
+            Opcode::LD_Vx_I(x) => self.ld_vx_i(x),
             Opcode::INVALID(op) => Err(format!("Invalid opcode: 0x{:04X}", op)),
-            _ => Err("Invalid opcode".to_string())
         }
     }
 
@@ -410,6 +443,73 @@ impl CPU {
             self.v[x as usize] = key as u8;
         } else {
             self.pc -= 2;
+        }
+        Ok(())
+    }
+
+    fn ld_b_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        let vx = self.v[x as usize];
+        self.memory[self.i as usize] = vx / 100;
+        self.memory[(self.i + 1) as usize] = (vx / 10) % 10;
+        self.memory[(self.i + 2) as usize] = vx % 10;
+        Ok(())
+    }
+
+    fn ld_dt_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.delay_timer = self.v[x as usize];
+        Ok(())
+    }
+
+    fn ld_st_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.sound_timer = self.v[x as usize];
+        Ok(())
+    }
+
+    fn add_i_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.i += self.v[x as usize] as u16;
+        Ok(())
+    }
+
+    fn ld_f_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        let digit = self.v[x as usize];
+        if digit > 0xF {
+            return Err(format!("Invalid digit value: {}", digit));
+        }
+        self.i = (digit as u16) * 5;
+        Ok(())
+    }
+
+    fn ld_i_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        for i in 0..=x as usize {
+            self.memory[(self.i as usize) + i] = self.v[i];
+        }
+        Ok(())
+    }
+
+    fn ld_vx_i(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        for i in 0..=x as usize {
+            self.v[i] = self.memory[(self.i as usize) + i];
         }
         Ok(())
     }
