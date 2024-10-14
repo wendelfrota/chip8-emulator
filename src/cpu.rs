@@ -10,6 +10,7 @@ const MEMORY_SIZE: usize = 4096;
 const NUM_REGISTERS: usize = 16;
 const STACK_SIZE: usize = 16;
 const MAX_PROGRAM_SIZE: usize = MEMORY_SIZE - PROGRAM_START as usize;
+const NUM_KEYS: usize = 16;
 
 #[derive(Clone)]
 pub struct CPU {
@@ -22,6 +23,7 @@ pub struct CPU {
     delay_timer: u8,
     sound_timer: u8,
     pub display: [bool; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize],
+    keys: [bool; NUM_KEYS],
 }
 
 impl CPU {
@@ -36,6 +38,7 @@ impl CPU {
             delay_timer: 0,
             sound_timer: 0,
             display: [false; (CHIP8_WIDTH * CHIP8_HEIGHT) as usize],
+            keys: [false; NUM_KEYS],
         }
     }
 
@@ -371,11 +374,43 @@ impl CPU {
         Ok(())
     }
 
+    fn skp_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        if self.keys[self.v[x as usize] as usize] {
+            self.pc += 2;
+        }
+        Ok(())
+    }
+
+    fn sknp_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        if !self.keys[self.v[x as usize] as usize] {
+            self.pc += 2;
+        }
+        Ok(())
+    }
+
     fn ld_vx_dt(&mut self, x: u8) -> Result<(), String> {
         if x as usize >= NUM_REGISTERS {
             return Err(format!("Invalid register index: {}", x));
         }
         self.v[x as usize] = self.delay_timer;
+        Ok(())
+    }
+
+    fn ld_vx_k(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        if let Some(key) = self.keys.iter().position(|&k| k) {
+            self.v[x as usize] = key as u8;
+        } else {
+            self.pc -= 2;
+        }
         Ok(())
     }
 }
