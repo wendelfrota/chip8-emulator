@@ -465,4 +465,12 @@ impl CPU {
         self.delay_timer = self.v[x as usize];
         Ok(())
     }
+
+    fn ld_st_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.sound_timer = self.v[x as usize];
+        Ok(())
+    }
 }
