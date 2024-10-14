@@ -374,6 +374,16 @@ impl CPU {
         Ok(())
     }
 
+    fn skp_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        if self.keys[self.v[x as usize] as usize] {
+            self.pc += 2;
+        }
+        Ok(())
+    }
+
     fn ld_vx_dt(&mut self, x: u8) -> Result<(), String> {
         if x as usize >= NUM_REGISTERS {
             return Err(format!("Invalid register index: {}", x));
