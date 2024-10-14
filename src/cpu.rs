@@ -75,6 +75,12 @@ impl CPU {
         Ok(())
     }
 
+    pub fn set_key(&mut self, key: usize, pressed: bool) {
+        if key < NUM_KEYS {
+            self.keys[key] = pressed;
+        }
+    }
+
     fn fetch_opcode(&self) -> u16 {
         let high_byte = self.memory[self.pc as usize] as u16;
         let low_byte = self.memory[(self.pc + 1) as usize] as u16;
