@@ -457,4 +457,12 @@ impl CPU {
         self.memory[(self.i + 2) as usize] = vx % 10;
         Ok(())
     }
+
+    fn ld_dt_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        self.delay_timer = self.v[x as usize];
+        Ok(())
+    }
 }
