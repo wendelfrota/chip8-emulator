@@ -493,4 +493,14 @@ impl CPU {
         self.i = (digit as u16) * 5;
         Ok(())
     }
+
+    fn ld_i_vx(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        for i in 0..=x as usize {
+            self.memory[(self.i as usize) + i] = self.v[i];
+        }
+        Ok(())
+    }
 }
