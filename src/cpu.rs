@@ -401,4 +401,16 @@ impl CPU {
         self.v[x as usize] = self.delay_timer;
         Ok(())
     }
+
+    fn ld_vx_k(&mut self, x: u8) -> Result<(), String> {
+        if x as usize >= NUM_REGISTERS {
+            return Err(format!("Invalid register index: {}", x));
+        }
+        if let Some(key) = self.keys.iter().position(|&k| k) {
+            self.v[x as usize] = key as u8;
+        } else {
+            self.pc -= 2;
+        }
+        Ok(())
+    }
 }
