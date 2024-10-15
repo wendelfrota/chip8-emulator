@@ -4,6 +4,7 @@ mod constants;
 mod cpu;
 mod emulator;
 mod opcode;
+mod error;
 
 use crate::cli::{Cli, Commands};
 use clap::Parser;
